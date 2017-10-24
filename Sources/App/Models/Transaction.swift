@@ -12,13 +12,13 @@ class Transaction {
     let sender: String
     let recipient: String
     let amount: Int
-    let uuid: String
+    let hash: String
     
-    init(sender: String, recipient: String, amount: Int) {
+    init(sender: String, recipient: String, amount: Int, hash: String) {
         self.sender = sender
         self.recipient = recipient
         self.amount = amount
-        self.uuid = UUID().uuidString
+        self.hash = hash
     }
 }
 
@@ -28,7 +28,7 @@ extension Transaction: JSONRepresentable {
         try json.set("sender", sender)
         try json.set("recipient", recipient)
         try json.set("amount", amount)
-        try json.set("uuid", uuid)
+        try json.set("hash", hash)
         return json
     }
 }

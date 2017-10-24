@@ -10,14 +10,16 @@ import Vapor
 
 class Block {
     let index: Int
-    let data: [Transaction]
-    let timestamp: Date
-    let prevHash: Int
+    let transactions: [Transaction]
+    let timestamp: TimeInterval
+    let prevHash: String
+    let hash: String
     
-    init(index: Int, data: [Transaction], timestamp: Date, prevHash: Int) {
+    init(index: Int, transactions: [Transaction], timestamp: Date, hash: String, prevHash: String) {
         self.index = index
-        self.data = data
-        self.timestamp = timestamp
+        self.transactions = transactions
+        self.timestamp = timestamp.timeIntervalSince1970
+        self.hash = hash
         self.prevHash = prevHash
     }
 }
@@ -26,8 +28,9 @@ extension Block: JSONRepresentable {
     func makeJSON() throws -> JSON {
         var json = JSON()
         try json.set("index", index)
-        try json.set("data", data)
+        try json.set("transactions", transactions)
         try json.set("timestamp", timestamp)
+        try json.set("hash", hash)
         try json.set("prevHash", prevHash)
         return json
     }

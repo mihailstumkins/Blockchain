@@ -9,40 +9,50 @@ import Foundation
 import Vapor
 
 public class Blockchain {
-    
-    let uuid: String
+
+    let name: String
     private var blocks = [Block]()
     private var pending = [Transaction]()
-    
-    init() {
-        uuid = UUID().uuidString
+
+    private let hash: HashProtocol
+
+    init(hash: HashProtocol) throws {
+        self.hash = hash
+        // we are hashing current timestamp as blockchain node name for simplicity
+        let name = try self.hash.make("\(Date().timeIntervalSince1970)")
+        self.name = name.makeString()
     }
     
-    func newTransaction(sender: String, recipient: String, amount: Int) {
-        let transaction = Transaction(sender: sender, recipient: recipient, amount: amount)
+    func transaction(sender: String, recipient: String, amount: Int) throws -> Transaction {
+        let hash = try self.hash.make("\(sender)\(recipient)\(amount)\(Date().timeIntervalSince1970)").makeString()
+        let transaction = Transaction(sender: sender, recipient: recipient, amount: amount, hash: hash)
         pending.append(transaction)
+        return transaction
     }
     
-    func newBlock() {
+    func block() throws -> Block {
         let current = self.pending
         self.pending = []
-        
-        let prevHash = (blocks.last?.prevHash ?? 0)
+
+        // once again using current timestamp for hash
+        let hash = try self.hash.make("\(Date().timeIntervalSince1970)").makeString()
+        let prevHash = (blocks.last?.hash ?? "0")
         let block = Block(index: blocks.count + 1,
-                          data: current,
+                          transactions: current,
                           timestamp: Date(),
+                          hash: hash,
                           prevHash: prevHash)
         
         self.blocks.append(block)
+        return block
     }
 }
 
 extension Blockchain: JSONRepresentable {
     public func makeJSON() throws -> JSON {
         var json = JSON()
-        try json.set("node", uuid)
+        try json.set("name", name)
         try json.set("blocks", blocks)
-        try json.set("pending", pending)
         return json
     }
 }
