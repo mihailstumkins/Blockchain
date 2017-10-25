@@ -16,7 +16,7 @@ public final class BlockchainProvider: Vapor.Provider {
     
     public func boot(_ droplet: Droplet) throws {
         let pow = ProofOfWork(hash: droplet.hash)
-        let blockchain = try Blockchain(hash: droplet.hash, pow: pow)
+        let blockchain = try Blockchain(hash: droplet.hash, pow: pow, client: droplet.client)
 
         // mine genesis block
         _ = try blockchain.block(proof: 1)

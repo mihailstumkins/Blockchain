@@ -8,7 +8,7 @@
 import Foundation
 import Vapor
 
-class Transaction {
+public final class Transaction {
     let sender: String
     let recipient: String
     let amount: Int
@@ -23,12 +23,21 @@ class Transaction {
 }
 
 extension Transaction: JSONRepresentable {
-    func makeJSON() throws -> JSON {
+    public func makeJSON() throws -> JSON {
         var json = JSON()
         try json.set("sender", sender)
         try json.set("recipient", recipient)
         try json.set("amount", amount)
         try json.set("hash", hash)
         return json
+    }
+}
+
+extension Transaction: JSONInitializable {
+    public convenience init(json: JSON) throws {
+        self.init(sender: try json.get("sender"),
+                  recipient: try json.get("recipient"),
+                  amount: try json.get("amount"),
+                  hash: try json.get("hash"))
     }
 }

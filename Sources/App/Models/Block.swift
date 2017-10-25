@@ -8,7 +8,7 @@
 import Foundation
 import Vapor
 
-class Block {
+public final class Block {
     let index: Int
     let transactions: [Transaction]
     let timestamp: TimeInterval
@@ -16,10 +16,10 @@ class Block {
     let prevHash: String
     let hash: String
     
-    init(index: Int, transactions: [Transaction], timestamp: Date, proof: Int, hash: String, prevHash: String) {
+    init(index: Int, transactions: [Transaction], timestamp: TimeInterval, proof: Int, hash: String, prevHash: String) {
         self.index = index
         self.transactions = transactions
-        self.timestamp = timestamp.timeIntervalSince1970
+        self.timestamp = timestamp
         self.proof = proof
         self.hash = hash
         self.prevHash = prevHash
@@ -27,7 +27,7 @@ class Block {
 }
 
 extension Block: JSONRepresentable {
-    func makeJSON() throws -> JSON {
+    public func makeJSON() throws -> JSON {
         var json = JSON()
         try json.set("index", index)
         try json.set("transactions", transactions)
@@ -36,5 +36,16 @@ extension Block: JSONRepresentable {
         try json.set("hash", hash)
         try json.set("prevHash", prevHash)
         return json
+    }
+}
+
+extension Block: JSONInitializable {
+    public convenience init(json: JSON) throws {
+      self.init(index: try json.get("index"),
+                transactions: try json.get("transactions"),
+                timestamp: try json.get("timestamp"),
+                proof: try json.get("proof"),
+                hash: try json.get("hash"),
+                prevHash: try json.get("prevHash"))
     }
 }

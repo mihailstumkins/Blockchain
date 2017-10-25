@@ -33,5 +33,21 @@ extension Droplet {
 
             return try block.makeJSON()
         }
+
+        post("/register") { req in
+            guard let json = req.json,
+                  let url = json["url"]?.string else {
+                    throw Abort(.badRequest)
+            }
+            self.blockchain?.register(url: url)
+            return Response(status: .ok)
+        }
+
+        get("/resolve") { req in
+            guard let blockchain = try self.blockchain?.resolve() else {
+                throw Abort(.badRequest)
+            }
+            return try blockchain.makeJSON()
+        }
     }
 }
