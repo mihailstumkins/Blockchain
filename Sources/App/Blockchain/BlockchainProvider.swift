@@ -15,10 +15,11 @@ public final class BlockchainProvider: Vapor.Provider {
     public func boot(_ config: Config) throws {}
     
     public func boot(_ droplet: Droplet) throws {
-        let blockchain = try Blockchain(hash: droplet.hash)
+        let pow = ProofOfWork(hash: droplet.hash)
+        let blockchain = try Blockchain(hash: droplet.hash, pow: pow)
 
         // mine genesis block
-        _ = try blockchain.block()
+        _ = try blockchain.block(proof: 1)
 
         droplet.blockchain = blockchain
         droplet.console.info("Created blockchain node \(blockchain.name)", newLine: true)

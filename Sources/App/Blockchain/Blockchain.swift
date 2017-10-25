@@ -15,9 +15,11 @@ public class Blockchain {
     private var pending = [Transaction]()
 
     private let hash: HashProtocol
+    let pow: ProofOfWorkProtocol
 
-    init(hash: HashProtocol) throws {
+    init(hash: HashProtocol, pow: ProofOfWorkProtocol) throws {
         self.hash = hash
+        self.pow = pow
         // we are hashing current timestamp as blockchain node name for simplicity
         let name = try self.hash.make("\(Date().timeIntervalSince1970)")
         self.name = name.makeString()
@@ -30,7 +32,11 @@ public class Blockchain {
         return transaction
     }
     
-    func block() throws -> Block {
+    func block(proof: Int) throws -> Block {
+
+        // reward miner with one coin
+        _ = try self.transaction(sender: "0", recipient: name, amount: 1)
+
         let current = self.pending
         self.pending = []
 
@@ -40,11 +46,16 @@ public class Blockchain {
         let block = Block(index: blocks.count + 1,
                           transactions: current,
                           timestamp: Date(),
+                          proof: proof,
                           hash: hash,
                           prevHash: prevHash)
         
         self.blocks.append(block)
         return block
+    }
+
+    func last() -> Block? {
+        return self.blocks.last
     }
 }
 
