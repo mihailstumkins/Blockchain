@@ -29,10 +29,10 @@ class ProofOfWork: ProofOfWorkProtocol {
         return next
     }
     
+    // we are considering proof valid if prev and proof string hash begins with 3 leading zeroes
     func valid(prev: Int, proof: Int) throws -> Bool {
         let guess = "\(prev)\(proof)"
         let value = try self.hash.make(guess).makeString()
-        print(value);
         return value.prefix(3) == "000" ? true : false
     }
 }

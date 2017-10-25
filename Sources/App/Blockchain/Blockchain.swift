@@ -32,11 +32,8 @@ public class Blockchain {
         return transaction
     }
     
-    func block(proof: Int) throws -> Block {
-
-        // reward miner with one coin
-        _ = try self.transaction(sender: "0", recipient: name, amount: 1)
-
+    func block(proof: Int, reward: Bool = false) throws -> Block {
+        if reward { try self.reward() }
         let current = self.pending
         self.pending = []
 
@@ -52,6 +49,11 @@ public class Blockchain {
         
         self.blocks.append(block)
         return block
+    }
+
+    // rewarding miner
+    func reward() throws {
+        _ = try self.transaction(sender: "0", recipient: name, amount: 1)
     }
 
     func last() -> Block? {

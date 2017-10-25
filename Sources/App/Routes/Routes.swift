@@ -27,7 +27,7 @@ extension Droplet {
         post("/mine") { req in
             guard let prev = self.blockchain?.last()?.proof,
                   let next = try self.blockchain?.pow.next(prev: prev),
-                  let block = try self.blockchain?.block(proof: next) else {
+                  let block = try self.blockchain?.block(proof: next, reward: true) else {
                 throw Abort(.badRequest)
             }
 
